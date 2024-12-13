@@ -49,7 +49,6 @@ while keepScrolling:
         WebDriverWait(driver, 0.5).until(
             EC.presence_of_element_located((By.XPATH, "//div[@role='feed']//div//div//p[contains(@class, 'fontBodyMedium')]"))
         )
-        time.sleep(5)
         print("You've reached the end of the list.")
         keepScrolling = False
         
@@ -62,7 +61,13 @@ maps_items = WebDriverWait(driver, 30).until(
     EC.presence_of_all_elements_located((By.XPATH, '//div[@role="feed"]//div[contains(@jsaction, "mouseover:pane")]'))
 )
 
-print(len(maps_items)) 
+print(f"Total items in list: {maps_items}")
+
+for item in maps_items:
+    item.click()
+    time.sleep(5)
+    
+
 # //div[@role="feed
 
 
