@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,7 +15,12 @@ class GoogleMapsScraper:
 
     def __init__(self, search_key):
         self.search_key = search_key
-        self.driver = webdriver.Chrome()
+        options = Options()
+        options.add_argument("--headless") # comment it while developing
+        self.driver = webdriver.Chrome(
+            service=Service(), 
+            options=options
+            )
         self.items = []
 
     def close_driver(self):
@@ -93,7 +100,7 @@ class GoogleMapsScraper:
                 a_tag.click()
 
                 business_name = maps_item.find_element(By.CSS_SELECTOR, "div.fontHeadlineSmall").text
-                print(f"Business Name: {business_name}")
+                # print(f"Business Name: {business_name}")
 
                 # Fetch website link if available
                 try:
@@ -101,14 +108,15 @@ class GoogleMapsScraper:
                     url = website.get_attribute("href")
                 except NoSuchElementException:
                     url = None
-                print(f"url: {url}")
+
+                # print(f"url: {url}")
 
                 # check for email in website
                 if url:
                     try:
                         email = scrape_email(url)
                     except Exception as e:
-                        print(f"Error fetching email: {e}")
+                        print(f"Error fetching email for {business_name}: {e}")
 
 
                 # Fetch phone number
@@ -120,7 +128,7 @@ class GoogleMapsScraper:
                     phone_number = business_full_element.find_element(By.XPATH, "//button[contains(@aria-label, 'Phone')]/div//div[contains(@class, 'fontBodyMedium')]").text
                 except NoSuchElementException:
                     phone_number = None
-                print(f"phone_number: {phone_number}")
+                # print(f"phone_number: {phone_number}")
 
                 self.items.append({"name": business_name, "website": url, "phone_number": phone_number, "email":email})
 
